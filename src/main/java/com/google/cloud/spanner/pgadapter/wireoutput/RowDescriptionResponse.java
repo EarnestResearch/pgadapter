@@ -114,6 +114,8 @@ public class RowDescriptionResponse extends WireOutput {
       case "FLOAT64": return Oid.FLOAT8;
       case "INT64": return Oid.INT8;
       case "DATE": return Oid.DATE;
+      case "NUMERIC": return Oid.NUMERIC;
+      case "BOOLEAN": return Oid.BOOL;
       default: return 0;
     }
   }

@@ -1,4 +1,6 @@
-# Google Cloud Spanner PostgreSQL Adapter
+# Google Cloud Spanner PostgreSQL Adapter 
+
+# Extended with BigQuery Support via Simba JDBC
 
 ## Introduction
 Spanner-PGAdapter is a simple, MITM, forward, non-transparent proxy, which 

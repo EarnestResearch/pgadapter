@@ -48,6 +48,7 @@ public class OptionsMetadata {
   private static final String OPTION_PSQL_MODE = "q";
   private static final String OPTION_COMMAND_METADATA_FILE = "j";
   private static final String OPTION_QUERY_REWRITES_FILE = "r";
+  private static final String OPTION_BIGQUERY_MODE = "x";
   private static final String COMMAND_METADATA_FILE_DEFAULT = "metadata/command_metadata.json";
   private static final String CLI_ARGS =
       "gcpga -p <project> -i <instance> -d <database> -c <credentials_file>";
@@ -156,16 +157,25 @@ public class OptionsMetadata {
    * @return The parsed JDBC connection string.
    */
   private String buildConnectionURL(CommandLine commandLine) {
-    // Note that Credentials here is the credentials file, not the actual credentials
-    return String.format("jdbc:cloudspanner:/"
+    if(commandLine.hasOption(OPTION_BIGQUERY_MODE)) {
+      return String.format("jdbc:bigquery://https://www.googleaps.com/bigquery/v2:443;"
+            + "ProjectId=%s;"
+            + "DefaultDataset=%s;"
+            + "OAuthType=3",
+        commandLine.getOptionValue(OPTION_PROJECT_ID),
+        commandLine.getOptionValue(OPTION_DATABASE_NAME));
+    } else {
+      // Note that Credentials here is the credentials file, not the actual credentials
+      return String.format("jdbc:cloudspanner:/"
             + "projects/%s/"
             + "instances/%s/"
             + "databases/%s"
             + ";credentials=%s",
-        commandLine.getOptionValue(OPTION_PROJECT_ID),
-        commandLine.getOptionValue(OPTION_INSTANCE_ID),
-        commandLine.getOptionValue(OPTION_DATABASE_NAME),
-        buildCredentialsFile(commandLine));
+         commandLine.getOptionValue(OPTION_PROJECT_ID),
+         commandLine.getOptionValue(OPTION_INSTANCE_ID),
+         commandLine.getOptionValue(OPTION_DATABASE_NAME),
+         buildCredentialsFile(commandLine));
+    }
   }
 
   /**
@@ -281,6 +291,7 @@ public class OptionsMetadata {
             + "which will translate incoming commands into whatever back-end SQL is desired.");
     options.addOption(OPTION_QUERY_REWRITES_FILE, "query-rewrites-metadata", true,
             "The full path of the file containing query rewrite instructions.");
+    options.addOption(OPTION_BIGQUERY_MODE, "bigquery", false, "BigQuery connection mode.");
     options.addOption(OPTION_HELP, "help", false,
         "Print help."
     );

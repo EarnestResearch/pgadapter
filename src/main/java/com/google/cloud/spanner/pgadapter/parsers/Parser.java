@@ -15,6 +15,8 @@
 package com.google.cloud.spanner.pgadapter.parsers;
 
 import com.google.cloud.spanner.pgadapter.ProxyServer.DataFormat;
+
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
@@ -59,9 +61,11 @@ public abstract class Parser<T> {
         return new StringParser(item);
       case Oid.TIMESTAMP:
         return new TimestampParser(item);
+      case Oid.NUMERIC:
+        return new NumericParser(item);
       default:
         throw new IllegalArgumentException(
-            "Illegal or unknown element type: " + oidType);
+            "Illegal or unknown element type [1]: " + oidType);
     }
   }
 
@@ -89,15 +93,18 @@ public abstract class Parser<T> {
       case Types.BIGINT:
         return new LongParser(result, columnarPosition);
       case Types.NVARCHAR:
+      case Types.VARCHAR:
         return new StringParser(result, columnarPosition);
       case Types.TIMESTAMP:
         return new TimestampParser(result, columnarPosition);
       case Types.ARRAY:
         return new ArrayParser(result, columnarPosition);
+      case Types.NUMERIC:
+        return new NumericParser(result, columnarPosition);
       case Types.STRUCT:
       default:
         throw new IllegalArgumentException(
-            "Illegal or unknown element oidType: " + oidType);
+            "Illegal or unknown element oidType: [2] " + oidType);
     }
   }
 
@@ -120,15 +127,18 @@ public abstract class Parser<T> {
         return new DoubleParser(result);
       case Types.BIGINT:
         return new LongParser(result);
+      case Types.VARCHAR:
       case Types.NVARCHAR:
         return new StringParser(result);
       case Types.TIMESTAMP:
         return new TimestampParser(result);
+      case Types.NUMERIC:
+        return new NumericParser(result);
       case Types.ARRAY:
       case Types.STRUCT:
       default:
         throw new IllegalArgumentException(
-            "Illegal or unknown element type: " + oidType);
+            "Illegal or unknown element type [3]: " + oidType);
     }
   }
 
